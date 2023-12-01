@@ -4,4 +4,4 @@ Big data application infrastructure implementation. The application serves 'pred
 
 ## Application Architecture:
 
-![application architecture](https://ibb.co/Sfcq5CD)
+![application architecture](https://ibb.co/Sfcq5CD "Application Architecture")
