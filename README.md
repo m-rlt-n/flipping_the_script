@@ -5,7 +5,13 @@ This repo contains a side-project I used to learn the fundamentals of big data a
 
 ![application architecture](/assets/application_architecture.png "Application Architecture")
 
-- ### test
+- ### Remote Data Sources
+    Data from the Cook County State's Attorney Office is pulled via .CSV Download from Cook County Government Open Data.
+- ### Data Lake
+    .CSV data is ingested into the Hadoop HDFS data lake using shell scripts
+- ### Batch Layer
+    Dispositions and Sentencing data are joined and saved in Hive using Spark Jobs
+- ###   
 
 ## In this repo:
 
