@@ -6,7 +6,8 @@ This repo contains a side-project I used to learn the fundamentals of big data a
 ![application architecture](/assets/application_architecture.png "Application Architecture")
 
 - ### Remote Data Sources
-    Data from the Cook County State's Attorney Office is pulled via .CSV Download from Cook County Government Open Data.
+    (Batch Layer) Data from the Cook County State's Attorney Office is pulled via .CSV Download from Cook County Government Open Data.
+    (Speed Layer) Data from 01/01/2023 and later is stored separeately (IN WHAT?) and streamed into the application in real time
 - ### Data Lake
     .CSV data is ingested into the Hadoop HDFS data lake using shell scripts
 - ### Batch Layer
