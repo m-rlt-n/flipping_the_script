@@ -1,5 +1,5 @@
 # flipping_the_script
-Big data application infrastructure implementation. The application serves 'predictive risk scores' based on the findings from 'Flipping the Script on Criminal Justice Risk Assessment' (Meyer, et al.)
+This repo contains a side-project I used to learn the fundamentals of big data application infrastructure implementation. The application serves 'predictive risk scores' based representing the risk of excessive sentencing faced in a given court case by a given defendant. The model implementation is based on the paper 'Flipping the Script on Criminal Justice Risk Assessment' (Meyer, et al.). The authors of this paper do a much better job articulating the purpose of this model than I would, and their work is linked in the citations section below. 
 
 ## Overview:
 
