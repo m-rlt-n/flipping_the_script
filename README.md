@@ -1,11 +1,11 @@
 # flipping_the_script
 This repo contains a side-project I used to learn the fundamentals of big data application architecture. The application serves 'predictive risk scores' based representing the risk of excessive sentencing faced in a given court case by a given defendant. The model implementation is based on the paper 'Flipping the Script on Criminal Justice Risk Assessment' (Meyer, et al.). The authors of this paper do a much better job articulating the purpose of this model than I would, and their work is linked in the citations section below. 
 
-## Overview:
-
 ## Application Architecture:
 
 ![application architecture](/assets/application_architecture.png "Application Architecture")
+
+- ### test
 
 ## In this repo:
 
