@@ -9,7 +9,8 @@ headers=(-H "Accept: application/json" -H "X-App-Token: $apptoken")
 # Commented out code for EDA
 # # set the $limit parameter to 2 to fetch only the first two rows
 # set_limit=5
-# url="$url?\$limit=2"
+# url="$url?\$limit=$set_limit"
+# curl -X GET "$url" "${headers[@]}"
 
 # # Check number of records
 # curl -X GET "$url" "${headers[@]}" | jq '. | length'
