@@ -12,28 +12,39 @@ batch_size=10000
 # Initialize variables
 offset=0
 json_data=""
+file_counter=1
 
-# Loop through paginated requests until all records are fetched
+# Loop through paginated requests to fetch all records
 while true; do
-    # Make the API call using cURL and format with jq
+    # API call in cURL and format with jq
     response=$(curl -s -X GET "$url?\$limit=$batch_size&\$offset=$offset" "${headers[@]}")
     current_batch_size=$(echo "$response" | jq length)
 
-    # Break the loop if no more records are returned
+    # Break if no more records are returned
     if [ "$current_batch_size" -eq 0 ]; then
         break
     fi
 
-    # Append the current batch of records to the result
+    # Append the current batch of records to json_data
     json_data="${json_data}${response}"
 
-    # Increment the offset for the next batch
+    # Increment the offset
     offset=$((offset + batch_size))
+
+    # Save the JSON data to a for every 200k records
+    if [ "$((offset % (20 * batch_size)))" -eq 0 ]; then
+        echo "$json_data" > "data/initiation_$file_counter.json"
+        file_counter=$((file_counter + 1))
+        json_data=""
+    fi
+
     echo "$offset"
 done
 
-# Save JSON data to a file
-echo "$json_data" > data/initiation.json
+# Save any remaining JSON data to a numbered file
+if [ -n "$json_data" ]; then
+    echo "$json_data" > "data/initiation_$file_counter.json"
+fi
 
-# Write to data lake
-hadoop fs -copyFromLocal -f data/initiation.json mnicolas/initiation.json
+# Move all JSON files to HDFS
+hadoop fs -copyFromLocal -f data/initiation_*.json mnicolas/
