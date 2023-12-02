@@ -1,7 +1,7 @@
 #!/bin/bash
 
 url="https://datacatalog.cookcountyil.gov/resource/apwk-dzx8.json"
-apptoken=$COOK_CNTY_APP_TOKEN # create app token here: https://dev.socrata.com/foundry/datacatalog.cookcountyil.gov/tg8v-tm6u
+apptoken=$COOK_CNTY_APP_TOKEN # create app token here: https://dev.socrata.com/foundry/datacatalog.cookcountyil.gov/apwk-dzx8
 
 # Set headers to accept JSON and include the app token
 headers=(-H "Accept: application/json" -H "X-App-Token: $apptoken")
@@ -14,11 +14,34 @@ headers=(-H "Accept: application/json" -H "X-App-Token: $apptoken")
 # # Check number of records
 # curl -X GET "$url" "${headers[@]}" | jq '. | length'
 
-json_data=$(curl -s -X GET "$url" "${headers[@]}" | jq -r '.[] | flatten | @csv')
+# Set the number of records to fetch per request
+batch_size=10000
 
-# Create a CSV file and write the header and data
-echo "case_id,case_participant_id,received_date,offense_category,primary_charge,charge_id,charge_version_id,disposition_charged_offense_title,charge_count,disposition_date,disposition_charged_chapter,disposition_charged_act,disposition_charged_section,disposition_charged_class,disposition_charged_aoic,charge_disposition,judge,court_name,court_facility,age_at_incident,race,gender,incident_begin_date,law_enforcement_agency,arrest_date,felony_review_date,felony_review_result,arraignment_date,updated_offense_category" > data/disposition.csv
-echo "$json_data" >> data/disposition.csv
+# Initialize variables
+offset=0
+json_data=""
+
+# Loop through paginated requests until all records are fetched
+while true; do
+    # Make the API call using cURL and format with jq
+    response=$(curl -s -X GET "$url?\$limit=$batch_size&\$offset=$offset" "${headers[@]}")
+    current_batch_size=$(echo "$response" | jq length)
+
+    # Break the loop if no more records are returned
+    if [ "$current_batch_size" -eq 0 ]; then
+        break
+    fi
+
+    # Append the current batch of records to the result
+    json_data="${json_data}${response}"
+
+    # Increment the offset for the next batch
+    offset=$((offset + batch_size))
+    echo "$offset"
+done
+
+# Save JSON data to a file
+echo "$json_data" > data/disposition.json
 
 # Write to data lake
-hadoop fs -copyFromLocal -f data/disposition.csv mnicolas/disposition.csv
+hadoop fs -copyFromLocal -f data/disposition.json mnicolas/disposition.json
