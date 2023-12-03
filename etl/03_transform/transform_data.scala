@@ -133,3 +133,21 @@ val sentDF = spark.read.schema(init_schema).option("multiline",true).json("mnico
 sentDF.show()
 val sentSize = sentDF.count()
 println(s"data size: $sentSize")
+
+// Find intersection of ids across the data sets
+val commonIDs = initDF.select("case_id").intersect(dispoDF.select("case_id")).intersect(sentDF.select("case_id"))
+val commonSize = commonIDs.count()
+println(s"data size: $commonSize")
+
+// Specify columns to bring from each DataFrame
+val dispoDFSubset = dispoDF.select("case_id", "judge", "chapter", "act", "section", "class", "aoic", "event", "event_date", "incident_end_date", "law_enforcement_agency", "unit", "received_date", "charge_count"
+)
+val sentDFSubset = sentDF.select("case_id", "case_participant_id", "offense_category", "primary_charge", "charge_id", "charge_version_id", "charge_offense_title", "age_at_incident", "gender", "race", "incident_begin_date", "arrest_date", "arraignment_date", "updated_offense_category", "sentence_judge", "court_name", "court_facility", "sentence_phase", "sentence_date", "sentence_type", "current_sentence", "commitment_type", "commitment_term", "commitment_unit", "length_of_case_in_days", "felony_review_date", "felony_review_result"
+)
+
+//
+val joinedDF = commonIDs
+  .join(dispoDFSubset, Seq("case_id"), "inner")
+  .join(sentDFSubset, Seq("case_id"), "inner")
+
+joinedDF.show()
