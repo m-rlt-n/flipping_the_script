@@ -16,11 +16,10 @@ headers=(-H "Accept: application/json" -H "X-App-Token: $apptoken")
 # curl -X GET "$url" "${headers[@]}" | jq '. | length'
 
 # Set the number of records to fetch per request
-batch_size=10000
+batch_size=100000
 
 # Initialize variables
 offset=0
-json_data=""
 file_counter=1
 
 # Loop through paginated requests to fetch all records
@@ -34,25 +33,19 @@ while true; do
         break
     fi
 
-    # Append the current batch of records to json_data
-    json_data="${json_data}${response}"
-
     # Increment the offset
     offset=$((offset + batch_size))
 
-    # Save the JSON data to a for every 200k records
-    if [ "$((offset % (20 * batch_size)))" -eq 0 ]; then
-        echo "$json_data" > "data/disposition_$file_counter.json"
-        file_counter=$((file_counter + 1))
-        json_data=""
-    fi
+    # Save the JSON data to a for every 100k records
+    echo "$response" > "data/disposition_$file_counter.json"
+    file_counter=$((file_counter + 1))
 
     echo "$offset"
 done
 
 # Save any remaining JSON data to a numbered file
-if [ -n "$json_data" ]; then
-    echo "$json_data" > "data/disposition_$file_counter.json"
+if [ -n "$response" ]; then
+    echo "$response" > "data/disposition_$file_counter.json"
 fi
 
 # Move all JSON files to HDFS
