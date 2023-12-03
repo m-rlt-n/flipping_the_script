@@ -36,7 +36,10 @@ val init_schema = StructType(
     StructField("felony_review_date", StringType, nullable = true),
     StructField("felony_review_result", StringType, nullable = true),
     StructField("arraignment_date", StringType, nullable = true),
-    StructField("updated_offense_category", StringType, nullable = true)
+    StructField("updated_offense_category", StringType, nullable = true),
+    StructField("bond_type_current", StringType, nullable = true),
+    StructField("bond_amount_current", StringType, nullable = true),
+    StructField("bond_electronic_flag_current", StringType, nullable = true)
   )
 )
 
@@ -81,7 +84,7 @@ val dispo_schema = StructType(
 )
 
 // Load disposition data into dispoDF
-val dispoDF = spark.read.schema(init_schema).option("multiline",true).json("mnicolas/disposition_*.json")
+val dispoDF = spark.read.schema(dispo_schema).option("multiline",true).json("mnicolas/disposition_*.json")
 dispoDF.show()
 val dispoSize = dispoDF.count()
 println(s"data size: $dispoSize")
@@ -129,25 +132,22 @@ val sent_schema = StructType(
 )
 
 // Load sentencing data into sentDF
-val sentDF = spark.read.schema(init_schema).option("multiline",true).json("mnicolas/sentencing_*.json")
+val sentDF = spark.read.schema(sent_schema).option("multiline",true).json("mnicolas/sentencing_*.json")
 sentDF.show()
 val sentSize = sentDF.count()
 println(s"data size: $sentSize")
 
 // Find intersection of ids across the data sets
-val commonIDs = initDF.select("case_id").intersect(dispoDF.select("case_id")).intersect(sentDF.select("case_id"))
+val commonIDs = dispoDF.select("case_id").intersect(sentDF.select("case_id"))
 val commonSize = commonIDs.count()
 println(s"data size: $commonSize")
 
 // Specify columns to bring from each DataFrame
-val dispoDFSubset = dispoDF.select("case_id", "judge", "chapter", "act", "section", "class", "aoic", "event", "event_date", "incident_end_date", "law_enforcement_agency", "unit", "received_date", "charge_count"
-)
-val sentDFSubset = sentDF.select("case_id", "case_participant_id", "offense_category", "primary_charge", "charge_id", "charge_version_id", "charge_offense_title", "age_at_incident", "gender", "race", "incident_begin_date", "arrest_date", "arraignment_date", "updated_offense_category", "sentence_judge", "court_name", "court_facility", "sentence_phase", "sentence_date", "sentence_type", "current_sentence", "commitment_type", "commitment_term", "commitment_unit", "length_of_case_in_days", "felony_review_date", "felony_review_result"
-)
+val initDFSubset = initDF.select("case_id", "updated_offense_category", "bond_type_current", "bond_amount_current", "bond_electronic_flag_current")
+val dispoDFSubset = dispoDF.select("case_id", "chapter", "act", "section", "class", "aoic", "event", "event_date", "law_enforcement_agency", "judge", "unit", "incident_end_date", "received_date", "charge_count")
+val sentDFSubset = sentDF.select("case_id", "case_participant_id", "offense_category", "primary_charge", "charge_id", "charge_version_id", "disposition_charged_offense_title", "age_at_incident", "gender", "race", "incident_begin_date", "arrest_date", "arraignment_date", "updated_offense_category", "sentence_judge", "court_name", "court_facility", "sentence_phase", "sentence_date", "sentence_type", "current_sentence", "commitment_type", "commitment_term", "commitment_unit", "length_of_case_in_days", "felony_review_date", "felony_review_result")
 
 //
-val joinedDF = commonIDs
-  .join(dispoDFSubset, Seq("case_id"), "inner")
-  .join(sentDFSubset, Seq("case_id"), "inner")
+val joinedDF = commonIDs.join(initDFSubset, Seq("case_id"), "inner").join(dispoDFSubset, Seq("case_id"), "inner").join(sentDFSubset, Seq("case_id"), "inner")
 
 joinedDF.show()
