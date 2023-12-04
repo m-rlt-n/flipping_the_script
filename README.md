@@ -3,7 +3,7 @@ This repo contains a side-project I used to learn the fundamentals of big data a
 
 ## Application Architecture:
 
-![application architecture](/assets/application_architecture.png "Application Architecture")
+![application architecture](/application_architecture.png "Application Architecture")
 
 - ### Remote Data Sources
     (Batch Layer) Data from the Cook County State's Attorney Office is pulled via .CSV Download from Cook County Government Open Data.
@@ -17,10 +17,11 @@ This repo contains a side-project I used to learn the fundamentals of big data a
 
 ## In this repo:
 
-This reposistory has `n` directories [`assets`, `bash_scripts`, `...`]
+This reposistory has `n` directories [`app`, `etl`, `...`]
 
-- `assets`
-- `bash_scripts`
+- `app`:
+- `etl`:
+- `prediction`:
 
 ## Citations:
 
