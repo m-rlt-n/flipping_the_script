@@ -80,7 +80,7 @@ val dispo_schema = StructType(
     StructField("received_date", StringType, nullable = true),
     StructField("arraignment_date", StringType, nullable = true),
     StructField("updated_offense_category", StringType, nullable = true),
-    StructField("charge_count", IntegerType, nullable = true)
+    StructField("charge_count", StringType, nullable = true)
   )
 )
 
