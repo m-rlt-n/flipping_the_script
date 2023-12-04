@@ -14,8 +14,8 @@ val assembler = new VectorAssembler()
   
 // Create a linear regression model
 val lr = new LinearRegression()
-    .setMaxIter(1000)
-    .setRegParam(0.1)
+    .setMaxIter(10000)
+    .setRegParam(0.001)
     .setFeaturesCol("features")
     .setLabelCol("commitment_term")
     .setPredictionCol("prediction")

@@ -5,3 +5,4 @@ untitled/
 untitled1/
 .vscode/
 .metals/
+load_hbase_data.scala
