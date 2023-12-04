@@ -14,7 +14,7 @@ import spark.implicits._
 val ccData = spark.table("cook_county_data")
 
 // Define the columns to one-hot encode
-val columnsToEncode: Seq[String] = Seq("sentence_judge", "unit", "gender", "race", "court_name", "offense_category", "disposition_charged_offense_title")
+val columnsToEncode: Seq[String] = Seq("sentence_judge", "unit", "gender", "race", "court_name", "offense_category", "disposition_charged_offense_title", "bond_type_current")
 
 // Transformations:
     // one-hot encoding over colunnsToEncode
@@ -70,33 +70,22 @@ val convertCommitmentUDF = udf((term: Int, unit: String) => {
   }
 })
 
-// Function to replace default values with statistics (e.g., mean)
-def replaceDefaultValues(
-    df: DataFrame,
-    conversions: Map[String, DataType],
-    replacementMethod: String
-): DataFrame = {
-  val infillDF = conversions.foldLeft(df) {
-    case (accDF, (inputCol, (targetDataType))) =>
-      val replacementValue = replacementMethod match {
-        case "mean" => accDF.select(avg(inputCol)).first().getDouble(0)
-        case "median" => accDF.stat.approxQuantile(inputCol, Array(0.5), 0.0)(0)
-        case _ => null  // Default to the original default value
-      }
+// Function to replace values with the median
+def replaceWithMedian(df: DataFrame, conversions: Map[String, DataType]): DataFrame = {
+  conversions.foldLeft(df) { (accDF, entry) =>
+    val (inputCol, targetDataType) = entry
+    val replacementValue = accDF.stat.approxQuantile(inputCol, Array(0.5), 0.0)(0)
 
-      accDF.withColumn(
-        inputCol,
-        when(col(inputCol) === null, replacementValue).otherwise(col(inputCol))
-      )
+    accDF.withColumn(inputCol, when(col(inputCol).isNull, replacementValue).otherwise(col(inputCol).cast(targetDataType)))
   }
-  infillDF
 }
 
 // Conversions variable
 val conversions = Map(
   "age_at_incident" -> IntegerType,
   "bond_amount_current" -> FloatType,
-  "commitment_term" -> IntegerType
+  "commitment_term" -> IntegerType,
+  "charge_count" -> IntegerType
 )
 
 // Run functions to clean data
@@ -104,7 +93,8 @@ val retypedDF = retypedColumns(encodedDF, conversions)
 val modifiedDF = retypedDF.withColumn("commitment_term", convertCommitmentUDF($"commitment_term", $"commitment_unit"))
 val valuesToKeep = Seq("Natural Life", "Year(s)", "Months", "Days")
 val filteredDF: DataFrame = modifiedDF.filter(col("commitment_unit").isin(valuesToKeep: _*))
-val infillDF = replaceDefaultValues(filteredDF, conversions, "median")
+val nullFilteredDF: DataFrame = modifiedDF.filter(col("commitment_unit").isNotNull) // no null outcomes
+val infillDF = replaceWithMedian(filteredDF, conversions)
 
 // Show the result
 infillDF.show()
