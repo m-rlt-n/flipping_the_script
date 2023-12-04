@@ -20,6 +20,7 @@ val columnsToEncode: Seq[String] = Seq("sentence_judge", "unit", "gender", "race
     // one-hot encoding over colunnsToEncode
     // retype `conversions` from StringType
     // Drop rows with `commitment_unit` not in `valuesToKeep`
+    // Group by case_id (this is a mistreatment of the data that would be resolved in a product app. i.e. there can be 1+ participants with 1+ charges per case_id)
 
 // Function to apply one-hot encoding to a specified column
 def encodeColumn(df: DataFrame, inputCol: String, outputCol: String): DataFrame = {
@@ -96,10 +97,64 @@ val filteredDF: DataFrame = modifiedDF.filter(col("commitment_unit").isin(values
 val nullFilteredDF: DataFrame = modifiedDF.filter(col("commitment_unit").isNotNull) // no null outcomes
 val infillDF = replaceWithMedian(filteredDF, conversions)
 
-// Show the result
-infillDF.show()
-val infillSize = infillDF.count()
-println(s"infillDF size: $infillSize")
+// Group over case_id
+val groupDF = infillDF.groupBy("case_id").agg(
+    first("case_participant_id").alias("case_participant_id"),
+    first("charge_version_id").alias("charge_version_id"),
+    first("updated_offense_category").alias("updated_offense_category"),
+    first("bond_type_current").alias("bond_type_current"),
+    max("bond_amount_current").alias("bond_amount_current"),
+    first("bond_electronic_flag_current").alias("bond_electronic_flag_current"),
+    first("chapter").alias("chapter"),
+    first("act").alias("act"),
+    first("section").alias("section"),
+    first("class").alias("class"),
+    first("aoic").alias("aoic"),
+    first("event").alias("event"),
+    first("event_date").alias("event_date"),
+    first("law_enforcement_agency").alias("law_enforcement_agency"),
+    first("judge").alias("judge"),
+    first("unit").alias("unit"),
+    first("incident_end_date").alias("incident_end_date"),
+    first("received_date").alias("received_date"),
+    max("charge_count").alias("charge_count"),
+    first("charge_id").alias("charge_id"),
+    first("offense_category").alias("offense_category"),
+    first("primary_charge").alias("primary_charge"),
+    first("disposition_charged_offense_title").alias("disposition_charged_offense_title"),
+    max("age_at_incident").alias("age_at_incident"),
+    first("gender").alias("gender"),
+    first("race").alias("race"),
+    first("incident_begin_date").alias("incident_begin_date"),
+    first("arrest_date").alias("arrest_date"),
+    first("arraignment_date").alias("arraignment_date"),
+    first("sentence_judge").alias("sentence_judge"),
+    first("court_name").alias("court_name"),
+    first("court_facility").alias("court_facility"),
+    first("sentence_phase").alias("sentence_phase"),
+    first("sentence_date").alias("sentence_date"),
+    first("sentence_type").alias("sentence_type"),
+    first("current_sentence").alias("current_sentence"),
+    first("commitment_type").alias("commitment_type"),
+    max("commitment_term").alias("commitment_term"),
+    first("commitment_unit").alias("commitment_unit"),
+    first("length_of_case_in_days").alias("length_of_case_in_days"),
+    first("felony_review_date").alias("felony_review_date"),
+    first("felony_review_result").alias("felony_review_result"),
+    first("sentence_judge_onehot").alias("sentence_judge_onehot"),
+    first("unit_onehot").alias("unit_onehot"),
+    first("gender_onehot").alias("gender_onehot"),
+    first("race_onehot").alias("race_onehot"),
+    first("court_name_onehot").alias("court_name_onehot"),
+    first("offense_category_onehot").alias("offense_category_onehot"),
+    first("disposition_charged_offense_title_onehot").alias("disposition_charged_offense_title_onehot"),
+    first("bond_type_current_onehot").alias("bond_type_current_onehot")
+  )
+
+// Show gorupDF and summary stats
+groupDF.show()
+val groupSize = groupDF.count()
+println(s"groupDF size: $groupSize")
 
 // Write DataFrame to Hive table
 infillDF.write
