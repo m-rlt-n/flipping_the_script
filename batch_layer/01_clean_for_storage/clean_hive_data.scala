@@ -97,13 +97,13 @@ val filteredDF: DataFrame = modifiedDF.filter(col("commitment_unit").isin(values
 val nullFilteredDF: DataFrame = modifiedDF.filter(col("commitment_unit").isNotNull) // no null outcomes
 val infillDF = replaceWithMedian(filteredDF, conversions)
 
-// Group over case_id
+// Group by case_id and take the first value for all cases (we are dropping ~18% of our data in order to simplify the problem space)
 val groupDF = infillDF.groupBy("case_id").agg(
     first("case_participant_id").alias("case_participant_id"),
     first("charge_version_id").alias("charge_version_id"),
     first("updated_offense_category").alias("updated_offense_category"),
     first("bond_type_current").alias("bond_type_current"),
-    max("bond_amount_current").alias("bond_amount_current"),
+    first("bond_amount_current").alias("bond_amount_current"),
     first("bond_electronic_flag_current").alias("bond_electronic_flag_current"),
     first("chapter").alias("chapter"),
     first("act").alias("act"),
@@ -117,12 +117,12 @@ val groupDF = infillDF.groupBy("case_id").agg(
     first("unit").alias("unit"),
     first("incident_end_date").alias("incident_end_date"),
     first("received_date").alias("received_date"),
-    max("charge_count").alias("charge_count"),
+    first("charge_count").alias("charge_count"),
     first("charge_id").alias("charge_id"),
     first("offense_category").alias("offense_category"),
     first("primary_charge").alias("primary_charge"),
     first("disposition_charged_offense_title").alias("disposition_charged_offense_title"),
-    max("age_at_incident").alias("age_at_incident"),
+    first("age_at_incident").alias("age_at_incident"),
     first("gender").alias("gender"),
     first("race").alias("race"),
     first("incident_begin_date").alias("incident_begin_date"),
@@ -136,7 +136,7 @@ val groupDF = infillDF.groupBy("case_id").agg(
     first("sentence_type").alias("sentence_type"),
     first("current_sentence").alias("current_sentence"),
     first("commitment_type").alias("commitment_type"),
-    max("commitment_term").alias("commitment_term"),
+    first("commitment_term").alias("commitment_term"),
     first("commitment_unit").alias("commitment_unit"),
     first("length_of_case_in_days").alias("length_of_case_in_days"),
     first("felony_review_date").alias("felony_review_date"),
