@@ -1,5 +1,5 @@
 // Dependencies
-import org.apache.spark.sql.{SparkSession, DataFrame}
+import org.apache.spark.sql.{SparkSession, DataFrame, SaveMode}
 import org.apache.spark.ml.feature.{StringIndexer, OneHotEncoder}
 import org.apache.spark.ml.Pipeline
 import org.apache.spark.sql.functions._
@@ -15,6 +15,11 @@ val ccData = spark.table("cook_county_data")
 
 // Define the columns to one-hot encode
 val columnsToEncode: Seq[String] = Seq("sentence_judge", "unit", "gender", "race", "court_name", "offense_category", "disposition_charged_offense_title")
+
+// Transformations:
+    // one-hot encoding over colunnsToEncode
+    // retype `conversions` from StringType
+    // Drop rows with `commitment_unit` not in `valuesToKeep`
 
 // Function to apply one-hot encoding to a specified column
 def encodeColumn(df: DataFrame, inputCol: String, outputCol: String): DataFrame = {
@@ -96,9 +101,17 @@ val conversions = Map(
 
 // Run functions to clean data
 val retypedDF = retypedColumns(encodedDF, conversions)
-// val modifiedDF = retypedDF.withColumn("commitment_term", convertAndDrop($"commitment_term", $"commitment_unit"))
 val modifiedDF = retypedDF.withColumn("commitment_term", convertCommitmentUDF($"commitment_term", $"commitment_unit"))
-val retypedInfillDF = replaceDefaultValues(modifiedDF, conversions, "median")
+val valuesToKeep = Seq("Natural Life", "Year(s)", "Months", "Days")
+val filteredDF: DataFrame = modifiedDF.filter(col("commitment_unit").isin(valuesToKeep: _*))
+val infillDF = replaceDefaultValues(filteredDF, conversions, "median")
 
 // Show the result
-retypedInfillDF.show()
+infillDF.show()
+val infillSize = infillDF.count()
+println(s"infillDF size: $infillSize")
+
+// Write DataFrame to Hive table
+infillDF.write
+  .mode(SaveMode.Overwrite)  // Choose the SaveMode: Overwrite, Append, ErrorIfExists, Ignore
+  .saveAsTable("clean_cook_county_data")

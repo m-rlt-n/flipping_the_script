@@ -165,4 +165,3 @@ println(s"joinedDF size: $joinedSize")
 joinedDF.write
   .mode(SaveMode.Overwrite)  // Choose the SaveMode: Overwrite, Append, ErrorIfExists, Ignore
   .saveAsTable("cook_county_data")
-// Done
