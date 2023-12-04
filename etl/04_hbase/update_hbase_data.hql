@@ -1,0 +1,2 @@
+-- Script to update the `nmarlton_court_data` table with new batch layer data 
+-- Not implemented yet, as it is not essential for the 'proof of concept'
