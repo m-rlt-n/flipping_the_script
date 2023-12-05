@@ -3,7 +3,7 @@ This repo contains a side-project exploring big data application architecture, i
 
 ## Example Run:
 
-![application example](/application_example_.png "Application Architecture")
+![application example](/application_example.png "Application Architecture")
 
 ## Application Architecture:
 
