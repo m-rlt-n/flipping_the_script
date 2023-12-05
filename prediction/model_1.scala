@@ -34,75 +34,10 @@ val lr = new LinearRegression()
 val pipeline = new Pipeline().setStages(Array(assembler, lr))
 val model = pipeline.fit(filteredData)
 
-// // Create a GBTRegressor model
-// val gbt = new GBTRegressor()
-//     .setMaxIter(100)
-//     .setFeaturesCol("features")
-//     .setLabelCol("commitment_term")
-//     .setPredictionCol("expected_value")
-//     // .setPredictionCol("stddev")  // This sets the column name for standard deviations
+// // Show predictions
+// val predictions = model.transform(filteredData)
+// predictions.select("commitment_term", "expected_value", "nth_percentile").show()
 
-// // Create pipeline and fit model
-// val pipeline = new Pipeline().setStages(Array(assembler, gbt))
-// val model = pipeline.fit(filteredData)
-
-// // Assuming you have a DataFrame `predictions` with a column named `prediction`
-// // val residuals = predictions.withColumn("residual", col("commitment_term") - col("expected_value"))
-
-// // Calculate standard error of residuals
-// // val residualStdDev = math.sqrt(residuals.agg(expr("VAR_SAMP(residual)")).collect()(0)(0).asInstanceOf[Double])
-
-// // Set the confidence level (e.g., 95%)
-// val confidenceLevel = 0.95
-
-// // Get the z-value for the confidence level
-// val zValue = org.apache.commons.math3.special.Erf.erfInv(confidenceLevel)
-
-// // Calculate the margin of error (z-value * standard error of residuals)
-// val marginOfError = zValue * residualStdDev
-
-// // Calculate lower and upper bounds of the prediction interval
-// val lowerBound = col("prediction") - marginOfError
-// val upperBound = col("prediction") + marginOfError
-
-// // Add lower and upper bounds to the predictions DataFrame
-// val predictionInterval = predictions.withColumn("lower_bound", lowerBound).withColumn("upper_bound", upperBound)
-
-// // Show the result
-// predictionInterval.select("label", "prediction", "lower_bound", "upper_bound").show()
-
-
-
-// // // Calculate upper bound of the predictive interval
-// // val alpha = 0.1
-// // val upperBoundUDF = udf((expectedValue: Double, conditionalVariance: Double) =>
-// //   expectedValue + math.sqrt(conditionalVariance) * org.apache.commons.math3.special.Erf.erfInv(2 * alpha - 1)
-// // )
-
-// // val predictionsWithUpperBound = predictions
-// //   .withColumn("upper_bound", upperBoundUDF(col("expected_value"), col("conditional_variance")))
-
-// // // Define especially lengthy sentences based on the threshold
-// // val especiallyLengthyUDF = udf((sentenceLength: Double, upperBound: Double) => if (sentenceLength > upperBound) 1 else 0)
-
-// // val predictionsWithIndicator = predictionsWithUpperBound
-// //   .withColumn("especially_lengthy", especiallyLengthyUDF(col("actual_sentence_length"), col("upper_bound")))
-
-// // // Show the results
-// // predictionsWithIndicator.select(/* your relevant columns */).show()
-
-
-
-
-
-
-
-// Make predictions
-val predictions = model.transform(filteredData)
-
-// Show predictions
-predictions.select("commitment_term", "expected_value", "nth_percentile").show()
-//
 // Specify model path and save model
 val modelPath = "hdfs:///user/hadoop/mnicolas/models/model_1"
 model.write.overwrite().save(modelPath)
