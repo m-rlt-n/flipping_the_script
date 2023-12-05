@@ -7,3 +7,4 @@ untitled1/
 .metals/
 load_hbase_data.scala
 scrap.sql
+.DS_Store
