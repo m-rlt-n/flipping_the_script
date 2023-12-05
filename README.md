@@ -1,6 +1,10 @@
 # flipping_the_script
 This repo contains a side-project exploring big data application architecture, in particular the Lambda Architecture. The application serves 'predictive risk scores' based representing the risk of excessive sentencing faced in a given court case by a given defendant. The model implementation is based on the paper 'Flipping the Script on Criminal Justice Risk Assessment' (Meyer, et al.). The authors of this paper do a much better job articulating the purpose of this model than I would, and their work is linked in the citations section below. 
 
+## Example Run:
+
+![application example](/application_example_.png "Application Architecture")
+
 ## Application Architecture:
 
 ![application architecture](/application_architecture.png "Application Architecture")
