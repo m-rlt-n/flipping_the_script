@@ -151,12 +151,27 @@ val groupDF = infillDF.groupBy("case_id").agg(
     first("bond_type_current_onehot").alias("bond_type_current_onehot")
   )
 
+// 
+val filterGroupDF = groupDF.filter(col("commitment_term") <= 100)
+
+// 
+val percentile = 0.75
+val percentDF = filterGroupDF.groupBy("charge_count", "offense_category_onehot", "disposition_charged_offense_title_onehot").agg(expr(s"percentile_approx(commitment_term, $percentile)").alias("nth_percentile"))
+percentDF.show()
+
+// and `commonColumn` is the column common to both DataFrames
+val joinedDF = filterGroupDF.join(percentDF, Seq("charge_count", "offense_category_onehot", "disposition_charged_offense_title_onehot"))
+
+// Show the joined DataFrame
+joinedDF.show()
+
 // Show gorupDF and summary stats
-groupDF.show()
-val groupSize = groupDF.count()
-println(s"groupDF size: $groupSize")
+joinedDF.show()
+val joinedSize = joinedDF.count()
+println(s"joinedDF size: $joinedSize")
 
 // Write DataFrame to Hive table
-infillDF.write
+joinedDF.write
   .mode(SaveMode.Overwrite)  // Choose the SaveMode: Overwrite, Append, ErrorIfExists, Ignore
   .saveAsTable("clean_cook_county_data")
+  //
