@@ -15,24 +15,17 @@
     // As it streams in, run both models, and append the three new values (Mean durration, Predicited durration, risk score) 
     // Save these values to HBase
 
-val data = spark.table("clean_cook_county_data")
-val filterData = data.filter(col("commitment_term") <= 100)
-// run first model
-// run second model
-// val columnDropDF = // Load `clean_cook_couty_data`
+// Dependencies
+import org.apache.spark.sql.{SparkSession, SaveMode}
+import org.apache.spark.sql.functions._
+import org.apache.spark.sql.types._
 
-// //
-// case_id string,
-//     updated_offense_category string,
-//     disposition_charged_offense_title string,
-//     received_date string, 
-//     judge string, 
-//     court_name string
-// )
+// Load and filter data
+val data = spark.table("clean_cook_county_data")
 
 // Set time parser policy and generate speedDF for streaming
 spark.conf.set("spark.sql.legacy.timeParserPolicy", "LEGACY")
-val speedDF = filterData.filter(col("incident_begin_date") > lit("2021-12-31")).select(
+val speedDF = data.filter(col("incident_begin_date") > lit("2021-12-31")).select(
     "case_id", "updated_offense_category", "disposition_charged_offense_title", "incident_begin_date", "judge",
     "charge_count", "age_at_incident", "bond_amount_current", "sentence_judge_onehot", "unit_onehot", "gender_onehot", 
     "race_onehot", "court_name_onehot", "offense_category_onehot", "disposition_charged_offense_title_onehot",
@@ -79,7 +72,9 @@ val batchDF = finalPercentileDF.select(
     // col("predicted_risk_percentile").alias("predicted_risk_percentile"),
     round(col("predicted_risk_percentile") * 100, 0).alias("predicted_risk_percentile")
 )
-
-batchDF.show()
+// batchDF.show()
 
 // Save batchDF to Hive
+batchDF.write
+  .mode(SaveMode.Overwrite)  // Choose the SaveMode: Overwrite, Append, ErrorIfExists, Ignore
+  .saveAsTable("cook_county_batch_layer")
