@@ -25,7 +25,7 @@ function rowToMap(row) {
     return stats;
 }
 
-hclient.table('nmarlton_cook_county_data_v0').row('326759693771').get((error, value) => {
+hclient.table('nmarlton_cook_county_data_v0').row('example_id').get((error, value) => {
 	console.info(rowToMap(value))
 	console.info(value)
 })
@@ -53,30 +53,28 @@ app.get('/delays.html',function (req, res) {
 		var risk_interpretation = `No interpretation is available for risk score "N/A"`
 		if (!err) {
 			var pred_risk = Number(col_val("predicted_risk_percentile"))
-			var risk_interpretation = `Your predicted risk perceintile (${pred_risk}) suggest you are at lower risk of excessive sentencing than most`
-			if (pred_risk > 49.0) {
-				var risk_interpretation = `Your predicted risk perceintile (${pred_risk}) suggest you are at moderate risk of excessive sentencing`
-			} if (pred_risk > 74.0) {
-				var risk_interpretation = `Your predicted risk perceintile (${pred_risk}) suggest you are at high risk of excessive sentencing`
+			var risk_interpretation = `The predicted risk percentile (${pred_risk}) suggest this defendant is at lower risk of excessive sentencing, given legally <br> &nbsp; irrelevant factors, than ${99 - pred_risk}% of people.`
+			if (pred_risk > 60.0) {
+				var risk_interpretation = `The predicted risk percentile (${pred_risk}) suggest this defendant is at higher risk of excessive sentencing, given legally <br> &nbsp; irrelevant factors, than ${pred_risk - 1}% of people.`
 			} if (pred_risk > 90.0) {
-				var risk_interpretation = `Your predicted risk perceintile (${pred_risk}) suggest you are at very high risk of excessive sentencing`
+				var risk_interpretation = `The predicted risk percentile (${pred_risk}) suggest this defendant is at very high risk of excessive sentencing, given factors that should be legally irrelevant.`
 			}
 		}
 
 		var risk_string = `
-		<b>What does this score mean for me?</b>
+		<b>What does this score mean for fot the defendant?</b>
 			<br>
 			&nbsp;&nbsp;${risk_interpretation}
 			<br>
 			<br>
-			&nbsp;&nbsp;<i>For legal council, you can contact:</i>
+			&nbsp;&nbsp;<i>For legal council, the defendant can contact:</i>
 			<br>
 			&nbsp;&nbsp;- <a href="https://www.cookcountypublicdefender.org/" target="_blank">The Law Office of the Cook County Public Defender</a>
 			<br>
 			&nbsp;&nbsp;- <a href="https://www.law.uchicago.edu/clinics/mandel/juvenile" target="_blank">The University of Chicago Criminal and Juvenile Justice Clinic</a>
 			<br>
 			<br>
-			&nbsp;&nbsp;<i>For legal mental health resoruces:</i>
+			&nbsp;&nbsp;<i>For mental health resurces:</i>
 			<br>
 			&nbsp;&nbsp;- <a href="https://www.chicago.gov/city/en/depts/cdph/provdrs/behavioral_health/svcs/2012_mental_healthservices.html" target="_blank">Chicago Department of Public Health, Mental Health Services</a>
 		`;
@@ -84,16 +82,13 @@ app.get('/delays.html',function (req, res) {
 		var methodology_string = `
 		<b>What is a predicted risk percentile?</b>
 			<br>
-			&nbsp;&nbsp;A measure that indicates the relative risk of an individual expereincing a particular outcome. <br>
-			&nbsp;&nbsp;For our purposes we consider: <br>
-			&nbsp;&nbsp;&nbsp;&nbsp;- scores (0 - 40) to be low risk,  <br>
-			&nbsp;&nbsp;&nbsp;&nbsp;- scores (41 - 75) to be moderate risk, <br>
-			&nbsp;&nbsp;&nbsp;&nbsp;- scores (76 - 90) to be high risk, <br>
-			&nbsp;&nbsp;&nbsp;&nbsp;- scores (91 - 100) to be high risks <br>
+			&nbsp;&nbsp;A measure that indicates the relative risk of an individual experiencing a particular outcome. It is <b>NOT</b> a probability. <br>
+			&nbsp;&nbsp;So, a score of 50.0 means an individual's risk score is lower than 49% of all risk scores, i.e. in the 50th percentile. <br>
+			&nbsp;&nbsp;It does not mean a 50/50 chance of the outcome. <br>
 			<br>
 			&nbsp;&nbsp;<b>The model used in this application is based on <a href="https://dl.acm.org/doi/abs/10.1145/3531146.3533104" target="_blank"> Flipping the Script on Criminal Justice Risk Assessment.</a></b> (Meyer, et al.)
 			<br>
-			&nbsp;&nbsp;Drawing on data from sentencing decisions in cook county, we emulate thier work. Thier work produced a "risk assessment instrument <br>
+			&nbsp;&nbsp;Drawing on data from sentencing decisions in cook county, we emulate their work. Their work produced a "risk assessment instrument <br>
 			&nbsp;&nbsp;that predicts the likelihood an individual will receive an especially lengthy sentence given factors that should be legally irrelevant." We<br>
 			&nbsp;&nbsp;apply their a "two-stage modeling approach." The first model labels sentences as "especially lengthy." The second model predicts an <br>
 			&nbsp;&nbsp;individual’s risk of receiving such a sentence
