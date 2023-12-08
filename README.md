@@ -34,12 +34,11 @@ These instructions assume you have access to the EMR cluster where the applicati
 ### To turn on the speed layer:
 1. ssh tunnel into the emr master node used for data engineering:
     `bash ssh -i "$key_file" "$user_name@$emr_master_node"`
-2. cd into nmarlton/app
-3. turn on the kafka consumer by running
+2. turn on the kafka consumer by cding into `nmarlton/consumer/target/` and running
     `spark-submit --master local[2] --driver-java-options "-Dlog4j.configuration=file:///home/hadoop/ss.log4j.properties" --class StreamCases uber-kafka-case-consumer-1.0-SNAPSHOT.jar b-1.mpcs53014kafka.o5ok5i.c4.kafka.us-east-2.amazonaws.com:9092,b-2.mpcs53014kafka.o5ok5i.c4.kafka.us-east-2.amazonaws.com:9092,b-3.mpcs53014kafka.o5ok5i.c4.kafka.us-east-2.amazonaws.com:9092`
-4. turn on the kafka producer by running
+3. turn on the kafka producer by cding into `nmarlton/producer/target/` and running
     `java -cp uber-kafka-stream-cases-1.0-SNAPSHOT.jar org.example.CaseDataToKafka county_cases "b-1.mpcs53014kafka.o5ok5i.c4.kafka.us-east-2.amazonaws.com:9092,b-2.mpcs53014kafka.o5ok5i.c4.kafka.us-east-2.amazonaws.com:9092,b-3.mpcs53014kafka.o5ok5i.c4.kafka.us-east-2.amazonaws.com:9092"`
-5. you can alway check the outputs by running
+4. you can alway check the outputs by running
     `kafka-console-consumer.sh --bootstrap-server b-1.mpcs53014kafka.o5ok5i.c4.kafka.us-east-2.amazonaws.com:9092,b-2.mpcs53014kafka.o5ok5i.c4.kafka.us-east-2.amazonaws.com:9092,b-3.mpcs53014kafka.o5ok5i.c4.kafka.us-east-2.amazonaws.com:9092 --topic county_cases --from-beginning`
 
     After step 4, you will see case_ids (along with other details) streaming by in the terminal. You can see that the speed layer is updating HBase in real time by copying any given case_id from the terminal and inputting it in the web app.
