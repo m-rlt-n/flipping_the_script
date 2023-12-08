@@ -8,19 +8,20 @@ This repo contains a project exploring big data application architecture, in par
 access app through browser: http://ec2-3-143-113-170.us-east-2.compute.amazonaws.com:3085/
 
 ## Application Run Instructions:
+These instructions assume you have access to the EMR cluster where the application is deployed.
 
 To interact with the web application:
-    1. create a tunnel between local port 8070 and remote port 3085 (where the app is hosted) on the emr_master_node used for application hosting.
+1. create a tunnel between local port 8070 and remote port 3085 (where the app is hosted) on the emr_master_node used for application hosting.
     `bash ssh -i "$key_file" -L "$local_port":"$emr_master_node":"$remote_port" "$user_name@$emr_master_node"`
-    2. cd into `nmarlton/app`
-    3. run `node app.js 3085 ec2-3-131-137-149.us-east-2.compute.amazonaws.com 8070`
-    4. access the application via a web browser
+2. cd into `nmarlton/app`
+3. run `node app.js 3085 ec2-3-131-137-149.us-east-2.compute.amazonaws.com 8070`
+4. access the application via a web browser
     `$emr_master_node\3085`
 
 To turn on the speed layer:
 1. ssh tunnel into the emr master node used for data engineering:
     `bash ssh -i "$key_file" "$user_name@$emr_master_node"`
-2. cd into nmarlton/
+2. cd into nmarlton/app
 3. turn on the kafka consumer by running
     `spark-submit --master local[2] --driver-java-options "-Dlog4j.configuration=file:///home/hadoop/ss.log4j.properties" --class StreamCases uber-kafka-case-consumer-1.0-SNAPSHOT.jar b-1.mpcs53014kafka.o5ok5i.c4.kafka.us-east-2.amazonaws.com:9092,b-2.mpcs53014kafka.o5ok5i.c4.kafka.us-east-2.amazonaws.com:9092,b-3.mpcs53014kafka.o5ok5i.c4.kafka.us-east-2.amazonaws.com:9092`
 4. turn on the kafka producer by running
