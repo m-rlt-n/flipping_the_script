@@ -53,7 +53,7 @@ app.get('/delays.html',function (req, res) {
 		var risk_interpretation = `No interpretation is available for risk score "N/A"`
 		if (!err) {
 			var pred_risk = Number(col_val("predicted_risk_percentile"))
-			var risk_interpretation = `The predicted risk percentile (${pred_risk}) suggest this defendant is at lower risk of excessive sentencing, given legally <br> &nbsp; irrelevant factors, than ${99 - pred_risk}% of people.`
+			var risk_interpretation = `The predicted risk percentile (${pred_risk}) suggests this defendant is at lower risk of excessive sentencing, given legally <br> &nbsp; irrelevant factors, than ${99 - pred_risk}% of people.`
 			if (pred_risk > 60.0) {
 				var risk_interpretation = `The predicted risk percentile (${pred_risk}) suggest this defendant is at higher risk of excessive sentencing, given legally <br> &nbsp; irrelevant factors, than ${pred_risk - 1}% of people.`
 			} if (pred_risk > 90.0) {
@@ -62,7 +62,7 @@ app.get('/delays.html',function (req, res) {
 		}
 
 		var risk_string = `
-		<b>What does this score mean for fot the defendant?</b>
+		<b>What does this score mean for the defendant?</b>
 			<br>
 			&nbsp;&nbsp;${risk_interpretation}
 			<br>
@@ -88,7 +88,7 @@ app.get('/delays.html',function (req, res) {
 			<br>
 			&nbsp;&nbsp;<b>The model used in this application is based on <a href="https://dl.acm.org/doi/abs/10.1145/3531146.3533104" target="_blank"> Flipping the Script on Criminal Justice Risk Assessment.</a></b> (Meyer, et al.)
 			<br>
-			&nbsp;&nbsp;Drawing on data from sentencing decisions in cook county, we emulate their work. Their work produced a "risk assessment instrument <br>
+			&nbsp;&nbsp;Drawing on data from sentencing decisions in Cook County, we emulate their work. Their work produced a "risk assessment instrument <br>
 			&nbsp;&nbsp;that predicts the likelihood an individual will receive an especially lengthy sentence given factors that should be legally irrelevant." We<br>
 			&nbsp;&nbsp;apply their a "two-stage modeling approach." The first model labels sentences as "especially lengthy." The second model predicts an <br>
 			&nbsp;&nbsp;individual’s risk of receiving such a sentence
