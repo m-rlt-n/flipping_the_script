@@ -38,7 +38,7 @@ object StreamCases {
     put
   }
 
-  // Add call to spark ML files to produce scores for incoming records
+  // TODO: Add call to spark ML files to one hot encode incoming records and produce scores
   // See batch_layer/02_prep_for_serving/create_hive_table.scala for sample code reading and apply SparkML models
 
   def main(args: Array[String]) {
@@ -59,7 +59,6 @@ object StreamCases {
 
     // Create direct kafka stream with brokers and topics
     val topicsSet = Set("county_cases")
-    // Create direct kafka stream with brokers and topics
     val kafkaParams = Map[String, Object](
       "bootstrap.servers" -> brokers,
       "key.deserializer" -> classOf[StringDeserializer],
@@ -78,9 +77,6 @@ object StreamCases {
     val kcrs = serializedRecords.map(rec => mapper.readValue(rec, classOf[KafkaCaseRecord]))
     kcrs.print()
 
-    //    val hbaseConf = HBaseConfiguration.create()
-    //    hbaseConf.set("hbase.zookeeper.property.clientPort", "2181")
-    //    hbaseConf.set("hbase.zookeeper.quorum", "yourHBaseZkQuorum")
     // Write to HBase
     kcrs.foreachRDD { rdd =>
       rdd.foreachPartition { partition =>
@@ -94,15 +90,6 @@ object StreamCases {
         connection.close()
       }
     }
-
-    //    val hbaseContext = new HBaseContext(ssc.sparkContext, hbaseConf)
-
-
-    //    val kfrs = serializedRecords.map(rec => mapper.readValue(rec, classOf[KafkaFlightRecord]))
-    //
-    //    // Update speed table
-    //    val processedFlights = kfrs.map(incrementDelaysByRoute)
-    //    processedFlights.print()
 
     // Start the computation
     ssc.start()
