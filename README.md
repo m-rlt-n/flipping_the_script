@@ -62,18 +62,21 @@ see `ingest\01_emr_connection\` for examples of shell scripts
 
 ## In this repo:
 
-This repository has `n` directories [`app`, `etl`, `...`]
+This repository has 6 sub-directories [`app`, `ingest`, `batch_layer`, `prediction`, `serving_layer`, `speed_layer`]
 
-- `app`:
-- `etl`:
-- `prediction`:
+- `app`: the web application described above. It is implemented in JavaScript with a few other bolt-ons to handle hmtl rendering. 
+- `ingest`: everything that needs to happen to get the data into the batch layer (`HDFS`)
+- `batch_layer`: data processing to output (a) data for SparkML, (b) the batch view that will be read into the serving layer
+- `prediction`: two SparkML models which are called by both the batch layer and the speed layer
+- `serving_layer`: the HBase table that the web app reads. This layer is very performant becasue all of the calculations happen on the back end. 
+- `speed_layer`: the Kafka 'producer' and 'consumer' applications that stream data into the serving_layer. Note that the SparkML models are not implmented in the speed layer. This is another oportuntiy to extend the repo. As of now, the speed layer asigns a flat 50.0 `perdicted_risk_percentile` to all streamed records and then writes to HBase.
 
 ## Citations:
 
 This project was inspired by the paper !['Flipping the Script on Criminal Justice Risk Assessment' (Meyers, et al.)](https://dl.acm.org/doi/abs/10.1145/3531146.3533104)
 
-
-
 Data was queried from ![Cook County Government Open Data](https://datacatalog.cookcountyil.gov/). This project employs the ![Dispositions](https://datacatalog.cookcountyil.gov/Courts/Dispositions/apwk-dzx8) and ![Sentencing](https://datacatalog.cookcountyil.gov/Courts/Sentencing/tg8v-tm6u) data sets from the Cook County State's Attorney Office. Last updated as of 09/06/2023.
+
+The impetus for this project, and a large amout of the boilerplate code that runs that applications came from ![Mike Spertus'](https://cs.uchicago.edu/people/michael-spertus/) ![Big Data Application Architecture](https://mpcs-courses.cs.uchicago.edu/2023-24/autumn/courses/mpcs-53014-1) class, which I would highly recommend to anyone with an interest in this subject and access to the resources of the University of Chicago. 
 
 I was able to take a shortcut on some of the EDA and join criteria thanks to the impressive work of the authors of this ![Cook County Mental Health Prediciton](https://github.com/kelseymarkey/cook-county-mental-health-prediction/tree/master) repo. ![Amber Teng](https://medium.com/@angelamarieteng) covers their methodology in ![Analyzing Chicago Court Data with Python](https://towardsdatascience.com/analyzing-chicago-court-data-with-python-8a4bae330dfd).
