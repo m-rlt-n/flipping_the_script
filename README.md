@@ -58,7 +58,9 @@ see `ingest\01_emr_connection\` for examples of shell scripts
     I wrote this data to CSV because it simplified EDA (which I needed to do in prep for later steps). That said, the data comes out of the Cook County API in JSON and there is no performance reason to mutate it into CSV before pulling it into the batch layer. 
 - ### Batch Layer
     Dispositions and Sentencing data are joined and saved in Hive using Spark Jobs
-- ###   
+- ### Serving Layer
+- ### Speed Layer   
+- ### Spark ML
 
 ## In this repo:
 
@@ -66,10 +68,11 @@ This repository has 6 sub-directories [`app`, `ingest`, `batch_layer`, `predicti
 
 - `app`: the web application described above. It is implemented in JavaScript with a few other bolt-ons to handle hmtl rendering. 
 - `ingest`: everything that needs to happen to get the data into the batch layer (`HDFS`)
-- `batch_layer`: data processing to output (a) data for SparkML, (b) the batch view that will be read into the serving layer
+- `batch_layer`: scripts for data processing to output (a) data for SparkML, (b) the batch view that will be read into the serving layer
 - `prediction`: two SparkML models which are called by both the batch layer and the speed layer
-- `serving_layer`: the HBase table that the web app reads. This layer is very performant becasue all of the calculations happen on the back end. 
-- `speed_layer`: the Kafka 'producer' and 'consumer' applications that stream data into the serving_layer. Note that the SparkML models are not implmented in the speed layer. This is another oportuntiy to extend the repo. As of now, the speed layer asigns a flat 50.0 `perdicted_risk_percentile` to all streamed records and then writes to HBase.
+- `serving_layer`: the scripts to produce and load the HBase table that the web app reads. This layer is very performant because all of the calculations happen on the back end. 
+- `speed_layer`: the Kafka 'producer' and 'consumer' applications that stream data into the serving_layer. Note that the SparkML models are not implemented in the speed layer. This is another opportunity to extend the repo. As of now, the speed layer assigns a flat 50.0 `perdicted_risk_percentile` to all streamed records and then writes to HBase.
+
 
 ## Citations:
 
