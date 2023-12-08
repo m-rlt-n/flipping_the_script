@@ -51,11 +51,13 @@ see `ingest\01_emr_connection\` for examples of shell scripts
 
 - ### Remote Data Sources
     (Batch Layer) Data from the Cook County State's Attorney Office is pulled via API call from Cook County Government Open Data.
-    (Speed Layer) Data from later that 01/01/2023 is queried in real time through the API and used to simulate streaming. 
+    (Speed Layer) Data from later than 01/01/2023 is queried in real time through the API and used to simulate streaming. 
 - ### Data Lake (HDFS)
+    Following the sushi principle, these are .json files saved to HDFS, and read into Spark scripts and loaded to Hive. 
     The code for pulling remote data into the data lake is checked into the `ingest` sub-directory. This is everything that needs to happen to get the data into the batch layer. Basically all shell scripts.
 - ### Batch Layer (Hive)
     The Batch layer is a set of Hive batch views that are used for ML and feeding the serving layer.
+
     The code is checked into the `batch_layer` sub-directory. It contains, scripts for data processing to output (a) data for SparkML, (b) the batch view that will be read into the serving layer. The scripts join Dispositions and Sentencing data, save it in Hive and run simple ML models using Spark Jobs
 - ### Serving Layer (HBase)
     The serving layer is a single HBase table that is read directly into the application. This layer is very performant because all of the calculations happen on the back end. 
@@ -68,11 +70,11 @@ see `ingest\01_emr_connection\` for examples of shell scripts
         (2) The SparkML models are actually not implemented in the speed layer right now. The speed layer assigns a flat 50.0 `perdicted_risk_percentile` to all streamed records and then writes to HBase. It's an intuitive (and probably fun) place to start, and I didn't prioritize it with the time I had. 
     The code is checked into the `speed_layer` sub-directory.
 - ### Spark ML
-    I copy the two-part modeling appraoch used by Meyer, et al. mechanically, but with exceedingly low fidelity. Again, ML was not the focus here. 
-    How I would extend this: If I find time to jump back into this repo, this will be the first place I go. It seems like HBART will be non-trivial to implment in SparkML. So, should be fun!
+    I copy the two-part modeling approach used by Meyer, et al. mechanically, but with exceedingly low fidelity. Again, ML was not the focus here. 
+    How I would extend this: If I find time to jump back into this repo, this will be the first place I go. It seems like HBART will be non-trivial to implement in SparkML. So, should be fun!
     The code is checked into the `prediction` sub-directory. There are two SparkML models (one for each step) which are called by both the batch layer and the speed layer
 - ### Web App
-    The web app (descripbed above) is implemented in JavaScript with a few other bolt-ons to handle hmtl rendering. I was basically editing html templates to pull this together. 
+    The web app (described above) is implemented in JavaScript with a few other bolt-ons to handle hmtl rendering. I was basically editing html templates to pull this together. 
     The code is checked into the `app` sub-directory.
 
 ## Citations:
