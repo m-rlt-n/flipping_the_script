@@ -1,4 +1,8 @@
 // Stage 2 Model: Predict whether an individual is at risk of receiving an especially lengthy sentence
+// The stage 2 model is implemented as a logistic regression in the paper, and in this project.
+// The paper uses the output of the model do approximate the 'likelyhood that an individual will receive 
+// an especially lengthy sentence based on factors that should be legally irrelevant.' This project takes
+// one additional step and transforms the probabilities into percentiles. 
 
 // Dependencies
 import org.apache.spark.ml.Pipeline

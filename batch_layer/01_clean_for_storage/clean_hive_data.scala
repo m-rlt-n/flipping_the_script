@@ -151,18 +151,16 @@ val groupDF = infillDF.groupBy("case_id").agg(
     first("bond_type_current_onehot").alias("bond_type_current_onehot")
   )
 
-// 
+// Drop records with committment term > 100 years
 val filterGroupDF = groupDF.filter(col("commitment_term") <= 100)
 
-// 
+//  Create field for the 75th percentile threshold for a given combination of "charge_count", "offense_category_onehot", "disposition_charged_offense_title_onehot"
 val percentile = 0.75
 val percentDF = filterGroupDF.groupBy("charge_count", "offense_category_onehot", "disposition_charged_offense_title_onehot").agg(expr(s"percentile_approx(commitment_term, $percentile)").alias("nth_percentile"))
 percentDF.show()
 
-// and `commonColumn` is the column common to both DataFrames
+// Join the dataframes
 val joinedDF = filterGroupDF.join(percentDF, Seq("charge_count", "offense_category_onehot", "disposition_charged_offense_title_onehot"))
-
-// Show the joined DataFrame
 joinedDF.show()
 
 // Show gorupDF and summary stats
@@ -174,4 +172,3 @@ println(s"joinedDF size: $joinedSize")
 joinedDF.write
   .mode(SaveMode.Overwrite)  // Choose the SaveMode: Overwrite, Append, ErrorIfExists, Ignore
   .saveAsTable("clean_cook_county_data")
-  //

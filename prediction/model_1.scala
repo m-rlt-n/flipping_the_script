@@ -1,9 +1,9 @@
 // Stage 1 Model: Predict sentence length and flag “especially lengthy” sentences
 // 'because data that mark sentences as having been especially lengthy do not exist, we begin the process of 
 // build-ing our risk assessment model by inferring which sentences were "especially lengthy."' (Meyer, et al.)
-// The paper implements their model using Heteroscedastic Bayesian autoregressive trees (HBART)
-// This project approximates the "especially lengthy sentence" flag by comparing a prediction to the 75th percentile for a given
-// combination of "charge_count", "offense_category_onehot", "disposition_charged_offense_title_onehot"
+// The paper implements their model using Heteroscedastic Bayesian Autoregressive Trees (HBART)
+// This project approximates the "especially lengthy sentence" flag by comparing a prediction to the 75th percentile of 
+// sentence length for a given combination of "charge_count", "offense_category_onehot", "disposition_charged_offense_title_onehot"
 
 // Dependencies
 import org.apache.spark.ml.Pipeline
