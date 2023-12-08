@@ -19,7 +19,7 @@ public class CaseDataToKafka {
 
         // Try to run producer
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(properties)) {
-            String apptoken = "6Fx17McUF7aN7T5JQMrwXnulM"; //System.getenv()
+            String apptoken = System.getenv("COOK_CNTY_APP_TOKEN");
             // Set headers to accept JSON and include the app token
             String[] headers = {"Accept: application/json", "X-App-Token: " + apptoken};
             String url = "https://datacatalog.cookcountyil.gov/resource/apwk-dzx8.json";
