@@ -1,5 +1,18 @@
 # flipping_the_script
-This repo contains a project exploring big data application architecture, in particular the Lambda Architecture. The application serves 'predictive risk scores' based representing the risk of excessive sentencing faced in a given court case by a given defendant. The model implementation is based on the paper 'Flipping the Script on Criminal Justice Risk Assessment' (Meyer, et al.). The authors of this paper articulate the purpose and context for this model in that paper, and their work is linked in the citations section below. 
+## About the project:
+This repo contains a project exploring big data application architecture, in particular the Lambda Architecture. For me, the purpose of the project was to learn the fundamentals of the Lambda Architecture through application. For the content of the application, I chose to build on work produced in the paper 'Flipping the Script on Criminal Justice Risk Assessment' (Meyer, et al.). My goal was to explore how their model might be put into production and used to support better outcomes for criminal justice involved individuals. 
+
+That said, I am using a different data set, and a materially less sophisticated modeling approach, given that the model was not the focus of this project. Interestingly, the authors produced an HBART model, which from my reading would be non-trivial to re-implement in sparkML. To anyone considering extending this work, improving the quality of the SparkML models (`prediction\model*.scala`) is the place I would start. 
+
+## About the Application:
+In the words of Meyer, et al.:
+
+    "In the criminal justice system, algorithmic risk assessment instruments are used to predict the risk a defendant poses to society; examples include the risk of recidivating or the risk of failing to appear at future court dates. However, defendants are also at risk of harm from the criminal justice system. To date, there exists no risk assessment instrument that considers the risk the system poses to the individual. We develop a risk assessment instrument that “flips the script.” Using data about U.S. federal sentencing decisions, we build a risk assessment instrument that predicts the likelihood an individual will receive an especially lengthy sentence given factors that should be legally irrelevant to the sentencing decision. To do this, we develop a two-stage modeling approach. Our first-stage model is used to determine which sentences were “especially lengthy.” We then use a second-stage model to predict the defendant’s risk of receiving a sentence that is flagged as especially lengthy given factors that should be legally irrelevant. The factors that should be legally irrelevant include, for example, race, court location, and other socio-demographic information about the defendant. Our instrument achieves comparable predictive accuracy to risk assessment instruments used in pretrial and parole contexts."
+
+This application, explores how these predictive risk scores might be served to legal professionals representing a defendant in a criminal trial. The application is intentionally not exploring how these scores might be communicated to the defendant. In the same way that predictive risk models are used to inform institutional decision-making, the scores produced by this model would be available to support the work of pubic defenders, etc. Specifically, because the scores estimate the risk of "especially lengthy sentence given factors that should be legally irrelevant," it could be a useful tool to help cast light on cases that might be unusually predisposed to judicial bias. 
+
+Meyer, et al. articulate the purpose and context for this tool in that paper which is linked !['here'](https://dl.acm.org/doi/abs/10.1145/3531146.3533104) and below. 
+
 
 ## Example Run:
 
@@ -39,17 +52,17 @@ see `ingest\01_emr_connection\` for examples of shell scripts
 
 - ### Remote Data Sources
     (Batch Layer) Data from the Cook County State's Attorney Office is pulled via .CSV Download from Cook County Government Open Data.
-    (Speed Layer) Data from 01/01/2023 and later is stored separeately (IN WHAT?) and streamed into the application in real time
+    (Speed Layer) Data from 01/01/2023 and later is stored separately (IN WHAT?) and streamed into the application in real time
 - ### Data Lake
     .CSV data is ingested into the Hadoop HDFS data lake using shell scripts in `etl/02_data_ingestion`
-    I wrote this data to CSV because it simplified EDA (which I needed to do in prep for later steps). That said, the data comes out of the Cook County API in JSon and there is no performace reason to mutate it into CSV before pulling it into the batch layer. 
+    I wrote this data to CSV because it simplified EDA (which I needed to do in prep for later steps). That said, the data comes out of the Cook County API in JSON and there is no performance reason to mutate it into CSV before pulling it into the batch layer. 
 - ### Batch Layer
     Dispositions and Sentencing data are joined and saved in Hive using Spark Jobs
 - ###   
 
 ## In this repo:
 
-This reposistory has `n` directories [`app`, `etl`, `...`]
+This repository has `n` directories [`app`, `etl`, `...`]
 
 - `app`:
 - `etl`:
@@ -63,4 +76,4 @@ This project was inspired by the paper !['Flipping the Script on Criminal Justic
 
 Data was queried from ![Cook County Government Open Data](https://datacatalog.cookcountyil.gov/). This project employs the ![Dispositions](https://datacatalog.cookcountyil.gov/Courts/Dispositions/apwk-dzx8) and ![Sentencing](https://datacatalog.cookcountyil.gov/Courts/Sentencing/tg8v-tm6u) data sets from the Cook County State's Attorney Office. Last updated as of 09/06/2023.
 
-I was able to take a shortcut on some of the EDA and join critera thanks to the impressive work of the authors of this ![Cook County Mental Health Prediciton](https://github.com/kelseymarkey/cook-county-mental-health-prediction/tree/master) repo. ![Amber Teng](https://medium.com/@angelamarieteng) covers their methodology in ![Analyzing Chicago Court Data with Python](https://towardsdatascience.com/analyzing-chicago-court-data-with-python-8a4bae330dfd).
+I was able to take a shortcut on some of the EDA and join criteria thanks to the impressive work of the authors of this ![Cook County Mental Health Prediciton](https://github.com/kelseymarkey/cook-county-mental-health-prediction/tree/master) repo. ![Amber Teng](https://medium.com/@angelamarieteng) covers their methodology in ![Analyzing Chicago Court Data with Python](https://towardsdatascience.com/analyzing-chicago-court-data-with-python-8a4bae330dfd).
