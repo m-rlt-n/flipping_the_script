@@ -10,7 +10,7 @@ access app through browser: http://ec2-3-143-113-170.us-east-2.compute.amazonaws
 ## Application Run Instructions:
 These instructions assume you have access to the EMR cluster where the application is deployed.
 
-To interact with the web application:
+### To interact with the web application:
 1. create a tunnel between local port 8070 and remote port 3085 (where the app is hosted) on the emr_master_node used for application hosting.
     `bash ssh -i "$key_file" -L "$local_port":"$emr_master_node":"$remote_port" "$user_name@$emr_master_node"`
 2. cd into `nmarlton/app`
@@ -18,7 +18,7 @@ To interact with the web application:
 4. access the application via a web browser
     `$emr_master_node\3085`
 
-To turn on the speed layer:
+### To turn on the speed layer:
 1. ssh tunnel into the emr master node used for data engineering:
     `bash ssh -i "$key_file" "$user_name@$emr_master_node"`
 2. cd into nmarlton/app
