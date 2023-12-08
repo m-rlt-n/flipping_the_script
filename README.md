@@ -50,32 +50,34 @@ see `ingest\01_emr_connection\` for examples of shell scripts
 ![application architecture](/application_architecture.png "Application Architecture")
 
 - ### Remote Data Sources
-    (Batch Layer) Data from the Cook County State's Attorney Office is pulled via .CSV Download from Cook County Government Open Data.
-    (Speed Layer) Data from 01/01/2023 and later is stored separately (IN WHAT?) and streamed into the application in real time
-- ### Data Lake
-    .CSV data is ingested into the Hadoop HDFS data lake using shell scripts in `etl/02_data_ingestion`
-    I wrote this data to CSV because it simplified EDA (which I needed to do in prep for later steps). That said, the data comes out of the Cook County API in JSON and there is no performance reason to mutate it into CSV before pulling it into the batch layer. 
-- ### Batch Layer
-    Dispositions and Sentencing data are joined and saved in Hive using Spark Jobs
-- ### Serving Layer
-- ### Speed Layer   
+    (Batch Layer) Data from the Cook County State's Attorney Office is pulled via API call from Cook County Government Open Data.
+    (Speed Layer) Data from later that 01/01/2023 is queried in real time through the API and used to simulate streaming. 
+- ### Data Lake (HDFS)
+    The code for pulling remote data into the data lake is checked into the `ingest` sub-directory. This is everything that needs to happen to get the data into the batch layer. Basically all shell scripts.
+- ### Batch Layer (Hive)
+    The Batch layer is a set of Hive batch views that are used for ML and feeding the serving layer.
+    The code is checked into the `batch_layer` sub-directory. It contains, scripts for data processing to output (a) data for SparkML, (b) the batch view that will be read into the serving layer. The scripts join Dispositions and Sentencing data, save it in Hive and run simple ML models using Spark Jobs
+- ### Serving Layer (HBase)
+    The serving layer is a single HBase table that is read directly into the application. This layer is very performant because all of the calculations happen on the back end. 
+    How I would extend this: There is a lot of information in the Cook County court records. Right now, the application serves a small fraction of it to the user. If I were thinking about extending the UI, this is where I would start. What other information might legal professionals use/need if they were interacting with this app. 
+    The code is checked into the `serving_layer` sub-directory. These are the scripts to produce and load the HBase table that the web app reads. 
+- ### Speed Layer (Kafka)
+    The speed layer consists of the Kafka 'producer' and 'consumer' applications that stream data into the `serving_layer`. 
+    How I would extend this: 
+        (1) The speed layer is a bit of a hack right now. That is, it taps an API and then streams the data using Kafka. I would like to think through actual real-time data feeds that could inform the model. But for this purpose, I just 'pretend' the data requires streaming. 
+        (2) The SparkML models are actually not implemented in the speed layer right now. The speed layer assigns a flat 50.0 `perdicted_risk_percentile` to all streamed records and then writes to HBase. It's an intuitive (and probably fun) place to start, and I didn't prioritize it with the time I had. 
+    The code is checked into the `speed_layer` sub-directory.
 - ### Spark ML
-
-## In this repo:
-
-This repository has 6 sub-directories [`app`, `ingest`, `batch_layer`, `prediction`, `serving_layer`, `speed_layer`]
-
-- `app`: the web application described above. It is implemented in JavaScript with a few other bolt-ons to handle hmtl rendering. 
-- `ingest`: everything that needs to happen to get the data into the batch layer (`HDFS`)
-- `batch_layer`: scripts for data processing to output (a) data for SparkML, (b) the batch view that will be read into the serving layer
-- `prediction`: two SparkML models which are called by both the batch layer and the speed layer
-- `serving_layer`: the scripts to produce and load the HBase table that the web app reads. This layer is very performant because all of the calculations happen on the back end. 
-- `speed_layer`: the Kafka 'producer' and 'consumer' applications that stream data into the serving_layer. Note that the SparkML models are not implemented in the speed layer. This is another opportunity to extend the repo. As of now, the speed layer assigns a flat 50.0 `perdicted_risk_percentile` to all streamed records and then writes to HBase.
-
+    I copy the two-part modeling appraoch used by Meyer, et al. mechanically, but with exceedingly low fidelity. Again, ML was not the focus here. 
+    How I would extend this: If I find time to jump back into this repo, this will be the first place I go. It seems like HBART will be non-trivial to implment in SparkML. So, should be fun!
+    The code is checked into the `prediction` sub-directory. There are two SparkML models (one for each step) which are called by both the batch layer and the speed layer
+- ### Web App
+    The web app (descripbed above) is implemented in JavaScript with a few other bolt-ons to handle hmtl rendering. I was basically editing html templates to pull this together. 
+    The code is checked into the `app` sub-directory.
 
 ## Citations:
 
-This project was inspired by the paper !['Flipping the Script on Criminal Justice Risk Assessment' (Meyers, et al.)](https://dl.acm.org/doi/abs/10.1145/3531146.3533104)
+This project was inspired by the paper !['Flipping the Script on Criminal Justice Risk Assessment' (Meyer, et al.)](https://dl.acm.org/doi/abs/10.1145/3531146.3533104)
 
 Data was queried from ![Cook County Government Open Data](https://datacatalog.cookcountyil.gov/). This project employs the ![Dispositions](https://datacatalog.cookcountyil.gov/Courts/Dispositions/apwk-dzx8) and ![Sentencing](https://datacatalog.cookcountyil.gov/Courts/Sentencing/tg8v-tm6u) data sets from the Cook County State's Attorney Office. Last updated as of 09/06/2023.
 
