@@ -55,9 +55,9 @@ app.get('/delays.html',function (req, res) {
 			var pred_risk = Number(col_val("predicted_risk_percentile"))
 			var risk_interpretation = `The predicted risk percentile (${pred_risk}) suggests this defendant is at lower risk of excessive sentencing, given legally <br> &nbsp; irrelevant factors, than ${99 - pred_risk}% of people.`
 			if (pred_risk > 60.0) {
-				var risk_interpretation = `The predicted risk percentile (${pred_risk}) suggest this defendant is at higher risk of excessive sentencing, given legally <br> &nbsp; irrelevant factors, than ${pred_risk - 1}% of people.`
+				var risk_interpretation = `The predicted risk percentile (${pred_risk}) suggests this defendant is at higher risk of excessive sentencing, given legally <br> &nbsp; irrelevant factors, than ${pred_risk - 1}% of people.`
 			} if (pred_risk > 90.0) {
-				var risk_interpretation = `The predicted risk percentile (${pred_risk}) suggest this defendant is at very high risk of excessive sentencing, given factors that should be legally irrelevant.`
+				var risk_interpretation = `The predicted risk percentile (${pred_risk}) suggests this defendant is at very high risk of excessive sentencing, given factors that should be legally irrelevant.`
 			}
 		}
 
