@@ -81,10 +81,10 @@ see `ingest\01_emr_connection\` for examples of shell scripts
 
 ## Citations:
 
-This project was inspired by the paper !['Flipping the Script on Criminal Justice Risk Assessment' (Meyer, et al.)](https://dl.acm.org/doi/abs/10.1145/3531146.3533104)
+This project was inspired by the paper ['Flipping the Script on Criminal Justice Risk Assessment' (Meyer, et al.)](https://dl.acm.org/doi/abs/10.1145/3531146.3533104)
 
-Data was queried from ![Cook County Government Open Data](https://datacatalog.cookcountyil.gov/). This project employs the ![Dispositions](https://datacatalog.cookcountyil.gov/Courts/Dispositions/apwk-dzx8) and ![Sentencing](https://datacatalog.cookcountyil.gov/Courts/Sentencing/tg8v-tm6u) data sets from the Cook County State's Attorney Office. Last updated as of 09/06/2023.
+Data was queried from [Cook County Government Open Data](https://datacatalog.cookcountyil.gov/). This project employs the [Dispositions](https://datacatalog.cookcountyil.gov/Courts/Dispositions/apwk-dzx8) and [Sentencing](https://datacatalog.cookcountyil.gov/Courts/Sentencing/tg8v-tm6u) data sets from the Cook County State's Attorney Office. Last updated as of 09/06/2023.
 
-The impetus for this project, and a large amout of the boilerplate code that runs that applications came from ![Mike Spertus'](https://cs.uchicago.edu/people/michael-spertus/) ![Big Data Application Architecture](https://mpcs-courses.cs.uchicago.edu/2023-24/autumn/courses/mpcs-53014-1) class, which I would highly recommend to anyone with an interest in this subject and access to the resources of the University of Chicago. 
+The impetus for this project, and a large amout of the boilerplate code that runs that applications came from [Mike Spertus'](https://cs.uchicago.edu/people/michael-spertus/) [Big Data Application Architecture](https://mpcs-courses.cs.uchicago.edu/2023-24/autumn/courses/mpcs-53014-1) class, which I would highly recommend to anyone with an interest in this subject and access to the resources of the University of Chicago. 
 
-I was able to take a shortcut on some of the EDA and join criteria thanks to the impressive work of the authors of this ![Cook County Mental Health Prediciton](https://github.com/kelseymarkey/cook-county-mental-health-prediction/tree/master) repo. ![Amber Teng](https://medium.com/@angelamarieteng) covers their methodology in ![Analyzing Chicago Court Data with Python](https://towardsdatascience.com/analyzing-chicago-court-data-with-python-8a4bae330dfd).
+I was able to take a shortcut on some of the EDA and join criteria thanks to the impressive work of the authors of this [Cook County Mental Health Prediciton](https://github.com/kelseymarkey/cook-county-mental-health-prediction/tree/master) repo. [Amber Teng](https://medium.com/@angelamarieteng) covers their methodology in [Analyzing Chicago Court Data with Python](https://towardsdatascience.com/analyzing-chicago-court-data-with-python-8a4bae330dfd).
